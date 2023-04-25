@@ -8,7 +8,12 @@ function App() {
   const [count, setCount] = useState(0)
 
   return (
+    
     <>
+    <header className="App-header">
+      <img src={reactLogo} className="App-logo" alt="logo" />
+<h1 className='text-mono text-justify p-2 font-bold'>TEXT 3D</h1>
+      </header>
   <ThreeText />
     </>
   )
