@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { Cloud, OrbitControls, Plane, Sky, Sparkles, Stars, Text, Text3D, Sphere, Billboard, ScreenSpace, Trail, CameraControls } from '@react-three/drei';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Cloud, OrbitControls, Plane, Sky, Sparkles, Stars, Text, Text3D, Sphere, Billboard, ScreenSpace, Trail, CameraControls, PerspectiveCamera, FlyControls } from '@react-three/drei';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
 import { SphereGeometry } from 'three';
@@ -21,16 +21,21 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const firebaseDb = getFirestore(firebaseApp);
 
-const Three = () => {
+const Three = ({ }) => {
   const [messages, setMessages] = useState([]);
   const [username, setUsername] = useState('');
   const [message, setMessage] = useState('');
 
   const sphereRef = useRef(); // Create a ref for the sphere
   const spacing = 1; // spacing between messages along the z-axis
-  const staggerAmount = 0.5; // additional offset to stagger messages along the z-axis
+  const staggerAmount = 2; // additional offset to stagger messages along the z-axis
 
+ 
 
+  // Update camera position on each frame
+  //on scroll move camerea through z index
+  
+ 
   const animateSphere = (time) => {
     // Animation logic for moving the sphere
     if (sphereRef.current) {
@@ -39,14 +44,7 @@ const Three = () => {
       sphereRef.current.position.set(x, y, 0);
     }
   };
-  function SelectToZoom({ children }) {
-    const api = useBounds()
-    return (
-      <group onClick={(e) => (e.stopPropagation(), e.delta <= 2 && api.refresh(e.object).fit())} onPointerMissed={(e) => e.button === 0 && api.refresh().fit()}>
-        {children}
-      </group>
-    )
-  }
+  
 
   
 
@@ -130,16 +128,12 @@ const Three = () => {
     const messages = querySnapshot.docs.map((doc) => doc.data());
     setMessages(messages);
 
+
+
+
   };
 
-  const handleSpacebarDown = (event) => {
-    const cameraPosition = cameraRef.current.position;
-    const speed = 0.1; // adjust the speed of movement
-    if (event.code === "Space") {
-      // Move camera forward along z-axis
-      cameraPosition.z -= speed;
-    }
-  };
+  
 
 
   
@@ -157,10 +151,14 @@ const Three = () => {
       </form>
       
       <Canvas  style={{ height: '100vh', width: '100vw' }} background='blue'>
-      {/* <Plane args={[10, 10]}  rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]}>
-        <meshStandardMaterial color={'#000000'} />
-      </Plane> */}
-      <CameraControls />
+    
+      <FlyControls
+          autoForward={true}
+          dragToLook={false}
+          movementSpeed={10}
+          rollSpeed={0.005}
+          makeDefault
+        />
        
         <Stars  radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
         <Sparkles  position={[0, 0, 0]} />
@@ -186,44 +184,52 @@ const Three = () => {
         <pointLight position={[10, 10, 10]} color='red' />
           
         {messages.map((message, index) => (
-          <OrthographicCamera makeDefault position={[0, 0, 8]} zoom={70} >
+         
         
-           <OrbitControls />
-      
-   
-  <meshStandardMaterial color={'#000000'} metalness={1}  />
- 
-    
-          <Text  key={index}
-      //set position of each message along z axis but leave space between them
-          position={[0, 0, zPositions[index]]}
-          color="black"
-          outlineColor="white" // set the outline color
-          outlineWidth={0.1} // set the outline width
-          fontSize={0.2}
-          //make the text face the camera
-       
-          anchorX="center" // set the anchor point on x axis
-          anchorY="middle"
-          font="/Orbitron_Bold.json"
-          
-          lineHeight={1}
-          textAlign="center" // set the text alignment
-           // set the depth offset (should be a small value)
-          
-        // set the font size
-         // set the anchor point on y axis
-          letterSpacing={0.5} // set the letter spacing
-          material={null} // set the material
-        >
-           {message.message} -  {message.username} 
-          </Text>
+           
+           <>
+
+           <Text key={index}
+
+            position={[0, 0, zPositions[index]]}
+            color="black"
+            outlineColor="white" // set the outline color
+            outlineWidth={0.1} // set the outline width
+            fontSize={0.2}
+            //make the text face the camera
+            anchorX="center" // set the anchor point on x axis
+            anchorY="middle"
+            font="/Orbitron_Bold.json"
+
+            lineHeight={1}
+            textAlign="center" // set the text alignment
+
+
+
+
+
+
+
+            // set the depth offset (should be a small value)
+            // set the font size
+            // set the anchor point on y axis
+            letterSpacing={0.5} // set the letter spacing
+            material={null} // set the material
+          >
+            {message.message} -  {message.username}
+          </Text> 
+
         
+         
           
+          </>  
+         
         
          
         
-          </OrthographicCamera>
+         
+        
+         
         ))}
       </Canvas>
     </div>
