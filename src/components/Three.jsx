@@ -21,6 +21,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const firebaseDb = getFirestore(firebaseApp);
 
+
 const Three = ({ }) => {
   const [messages, setMessages] = useState([]);
   const [username, setUsername] = useState('');
@@ -28,14 +29,16 @@ const Three = ({ }) => {
 
   const sphereRef = useRef(); // Create a ref for the sphere
   const spacing = 1; // spacing between messages along the z-axis
-  const staggerAmount = 2; // additional offset to stagger messages along the z-axis
+  const staggerAmount = 1; // additional offset to stagger messages along the z-axis
+  const [shouldAnimate, setShouldAnimate] = useState(true);
+  const cameraRef = useRef();
+  const sceneRef = useRef();
 
- 
 
   // Update camera position on each frame
   //on scroll move camerea through z index
   
- 
+  const [isAnimating, setIsAnimating] = useState(true);
   const animateSphere = (time) => {
     // Animation logic for moving the sphere
     if (sphereRef.current) {
@@ -45,8 +48,12 @@ const Three = ({ }) => {
     }
   };
   
+  
+
+
 
   
+ 
 
   const setZPositions = (messages, spacing, staggerAmount) => {
     const zPositions = [];
@@ -64,28 +71,37 @@ const Three = ({ }) => {
 
   //how do i call the above function to set the z positions of each message and username?
   
+    const stopScroll = () => {
+      setIsAnimating(false);
+    };
+
+  
 
   useEffect(() => {
     let frameId;
     const animate = (time) => {
-      animateSphere(time);
+      if (isAnimating) { // Add condition to check isAnimating state
+        animateSphere(time);
+      }
       frameId = requestAnimationFrame(animate);
     };
     frameId = requestAnimationFrame(animate);
     return () => {
       cancelAnimationFrame(frameId);
     };
-  }, []);
+  }, [isAnimating]); 
 
   useEffect(() => {
-//fectch messages from firebase as they are added 
+    // Fetch messages from Firebase as they are added
     const fetchMessages = async () => {
       const querySnapshot = await getDocs(collection(firebaseDb, 'messages'));
       const messages = querySnapshot.docs.map((doc) => doc.data());
       setMessages(messages);
+      // Set z positions of messages
+      const zPositions = setZPositions(messages, spacing, staggerAmount);
+      setZPositions(zPositions);
     }
     fetchMessages();
-
   }, []);
 
 //show new messages as they are added
@@ -97,18 +113,19 @@ const Three = ({ }) => {
 
   }
 
+  const animate = (time) => {
+    if (isAnimating) {
+      animateSphere(time);
+    }
+    frameId = requestAnimationFrame(animate);
+  };
+    
+
+    
+ 
 
 
-
-//function that positions each message along the z index in descending order
-  
-  
-
-     
-
-
-
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!username || !message) {
@@ -127,11 +144,10 @@ const Three = ({ }) => {
     const querySnapshot = await getDocs(collection(firebaseDb, 'messages'));
     const messages = querySnapshot.docs.map((doc) => doc.data());
     setMessages(messages);
+};
 
-
-
-
-  };
+   
+    
 
   
 
@@ -145,20 +161,36 @@ const Three = ({ }) => {
         <input  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-200 focus:border-blue-500 block  w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' type="text" id="username"  value={username} onChange={(e) => setUsername(e.target.value)} />
         <br />
         <label htmlFor="message">Message: </label>
-        <input className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-200 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' type="text" id="message" value={message} onChange={(e) => setMessage(e.target.value)} />
+        <input className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-200 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' type="text" id="message" value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={onkeydown} />
+
         <br />
         <button className='  bg-stone-100 text-black hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm px-4 py-2  ' type="submit">Submit</button>
       </form>
+     
       
       <Canvas  style={{ height: '100vh', width: '100vw' }} background='blue'>
-    
+ 
       <FlyControls
-          autoForward={true}
+      background='blue'
+          autoForward={false}
           dragToLook={false}
           movementSpeed={10}
-          rollSpeed={0.005}
+          rollSpeed={Math.PI / 24}
           makeDefault
-        />
+          position={[0, 2, zPositions[0]]}
+          
+          onScroll={zPositions[0]}
+
+          
+         />
+
+       
+        
+
+
+
+       
+
        
         <Stars  radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
         <Sparkles  position={[0, 0, 0]} />
@@ -188,6 +220,7 @@ const Three = ({ }) => {
         
            
            <>
+           <mesh >
 
            <Text key={index}
 
@@ -218,6 +251,7 @@ const Three = ({ }) => {
           >
             {message.message} -  {message.username}
           </Text> 
+          </mesh>
 
         
          
@@ -237,3 +271,7 @@ const Three = ({ }) => {
 };
 
 export default Three;
+
+
+
+

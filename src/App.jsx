@@ -14,6 +14,9 @@ function App() {
       <img src={reactLogo} className="App-logo" alt="logo" />
 <h1 className='text-mono text-justify p-2 font-bold'>TEXT 3D</h1>
       </header>
+      <div id="info"> <br/>
+		<b>WASD</b> move, <b>R|F</b> up | down, <b>Q|E</b> roll, <b>up|down</b> pitch, <b>left|right</b> yaw
+		</div>
   <ThreeText />
     </>
   )
