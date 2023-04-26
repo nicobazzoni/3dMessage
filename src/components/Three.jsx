@@ -149,9 +149,52 @@ const Three = ({ }) => {
   };
 
 
+    //create shiny spheres that move toward camera
+    const [shinySpheres, setShinySpheres] = useState([]);
+    const [shinySphereColors, setShinySphereColors] = useState([]);
+    const [shinySpherePositions, setShinySpherePositions] = useState([]);
+    const [shinySphereVelocities, setShinySphereVelocities] = useState([]);
+    const [shinySphereRadius, setShinySphereRadius] = useState(0.5);
+    const [shinySphereSegments, setShinySphereSegments] = useState(16);
+
+    const generateShinySpheres = () => {
+      const spheres = [];
+      const colors = [];
+      const positions = [];
+      const velocities = [];
+      for (let i = 0; i < 10; i++) {
+        const sphere = new THREE.SphereGeometry(shinySphereRadius, shinySphereSegments, shinySphereSegments);
+        const color = new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`);
+        const position = new THREE.Vector3(
+          Math.random() * 10 - 5,
+          Math.random() * 10 - 5,
+          Math.random() * 10 - 5
+        );
+        const velocity = new THREE.Vector3(
+          Math.random() * 0.01 - 0.005,
+          Math.random() * 0.01 - 0.005,
+          Math.random() * 0.01 - 0.005
+        );
+        spheres.push(sphere);
+        colors.push(color);
+        positions.push(position);
+        velocities.push(velocity);
+      }
+      setShinySpheres(spheres);
+      setShinySphereColors(colors);
+      setShinySpherePositions(positions);
+      setShinySphereVelocities(velocities);
+    };
+
+
+  
+
+    useEffect(() => {
+      generateShinySpheres();
+    }, []);
 
    
-    
+  
    
 
 
@@ -216,20 +259,36 @@ const Three = ({ }) => {
  
       <FlyControls
           background='white'
-          autoForward={false}
+          autoForward={true}
           dragToLook={false}
-          movementSpeed={10}
+          movementSpeed={3}
           rollSpeed={null}
           makeDefault
-          position={[0, 2, zPositions[0]]}
+          position={[0, 2, 0]}
+          speed={0.2}
+          lookAt={[0, 0, 0]} // Set the initial target point of the camera
+          up={[0, 2, 0]} // S
+          
+         
           
           />
+          
+
+
 
          
 
        <Stars  radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-        <Sparkles  position={[0, 0, 0]} /> 
-        <Cloud position={[Math.random() * 10, 5,  Math.random() * -30, Math.random() * -10]} />
+       <Sparkles
+        position={[Math.random( ) * 10, 5,  Math.random( ) * -30, Math.random( ) * -10]}
+
+        color="black" // Color of the sparkles
+        count={20000} // Number of sparkles in the particle system
+        size={1} // Size of the sparkles
+        opacity={1} // Opacity of the sparkles
+        fade // Fade the sparkles in/out
+      />
+        <Cloud color='black' position={[Math.random() * 10, 5,  Math.random() * -30, Math.random() * -10]} />
         <Trail  
          width={0.2} 
          color={'hotpink'} 
@@ -275,7 +334,7 @@ const Three = ({ }) => {
             letterSpacing={0.5} 
             material={null} 
           >
-            {message.message} -  {message.username}
+            {message.message}  <></> {message.username}
           
           </Text> 
           </mesh>
