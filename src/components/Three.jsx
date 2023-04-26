@@ -6,7 +6,9 @@ import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
 import { SphereGeometry } from 'three';
 import { signIn } from '../firebase'
 import { OrthographicCamera,Bounds, useBounds } from '@react-three/drei';
-
+import { Line } from '@react-three/drei';
+import * as THREE from 'three';
+import { Torus, } from '@react-three/drei';
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBj569fcombAmC3dDyzXdOm-hMxPpkhrz4",
@@ -66,16 +68,11 @@ const Three = ({ }) => {
     return zPositions;
   };
   const zPositions = setZPositions(messages, spacing, staggerAmount);
-  //set the position of each message along the z axis but staggered so each one is visible
+
  
 
-  //how do i call the above function to set the z positions of each message and username?
-  
-    const stopScroll = () => {
-      setIsAnimating(false);
-    };
+ 
 
-  
 
   useEffect(() => {
     let frameId;
@@ -121,8 +118,41 @@ const Three = ({ }) => {
   };
     
 
-    
+
+
+
+
+  const [colors, setColors] = useState([]);
+
+  useEffect(() => {
+    const generateColors = () => {
+      const colors = [];
+      for (let i = 0; i < 5; i++) {
+        const hue = Math.floor(Math.random() * 360); // Random hue value between 0 and 359
+        const saturation = Math.floor(Math.random() * 101); // Random saturation value between 0 and 100
+        const lightness = Math.floor(Math.random() * 51) + 25; // Random lightness value between 25 and 75
+        const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        colors.push(color);
+      }
+      return colors;
+    };
+
+  }, []);
+
+
+
  
+
+  const handleGenerateColors = () => {
+    const newColors = generateColors();
+    setColors(newColors);
+  };
+
+
+
+   
+    
+   
 
 
     const handleSubmit = async (e) => {
@@ -146,69 +176,72 @@ const Three = ({ }) => {
     setMessages(messages);
 };
 
-   
-    
-
-  
-
-
-  
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-      <label  className="block mt-4 mb-2 p-4 text-sm font-medium text-gray-900 items-center justify-center ">Username: </label>
-        <input  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-200 focus:border-blue-500 block  w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' type="text" id="username"  value={username} onChange={(e) => setUsername(e.target.value)} />
-        <br />
-        <label htmlFor="message">Message: </label>
-        <input className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-200 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500' type="text" id="message" value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={onkeydown} />
-
-        <br />
-        <button className='  bg-stone-100 text-black hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm px-4 py-2  ' type="submit">Submit</button>
-      </form>
+    <div className='border-none'>
+     <form onSubmit={handleSubmit} className="mb-4 flex justify-center  ">
+  <div className="bg-stone-200rounded-lg shadow-lg p-4 max-w-sm">
+    <label className="block mt-2 mb-2 p-2 text-sm font-medium text-gray-900 items-center justify-center">
+      Username:
+    </label>
+    <input
+      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-gray-900 text-sm mb-4"
+      type="text"
+      id="username"
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+    />
+    <label htmlFor="message" className="block text-sm font-medium text-gray-900">
+      Message:
+    </label>
+    <input
+      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-gray-900 text-sm mb-4"
+      type="text"
+      id="message"
+      value={message}
+      onChange={(e) => setMessage(e.target.value)}
+      onKeyDown={onkeydown}
+    />
+    <button
+      className="w-full bg-stone-100 text-black hover:bg-teal-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm px-4 py-2"
+      type="submit"
+    >
+      Submit
+    </button>
+  </div>
+</form>
      
       
       <Canvas  style={{ height: '100vh', width: '100vw' }} background='blue'>
  
       <FlyControls
-      background='blue'
+          background='white'
           autoForward={false}
           dragToLook={false}
           movementSpeed={10}
-          rollSpeed={Math.PI / 24}
+          rollSpeed={null}
           makeDefault
           position={[0, 2, zPositions[0]]}
           
-          onScroll={zPositions[0]}
+          />
 
-          
-         />
+         
 
-       
-        
-
-
-
-       
-
-       
-        <Stars  radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-        <Sparkles  position={[0, 0, 0]} />
-        <ambientLight />
-        {/* <Cloud position={[Math.random() * 10, 5,  Math.random() * 10, Math.random() * 10]} /> */}
-        <Trail   width={0.2} // Width of the line
-  color={'hotpink'} // Color of the line
-  length={0.5} // Length of the line
-  decay={0.5} // How fast the line fades away
-  local={false} // Wether to use the target's world or local positions
-  stride={1} // Min distance between previous and current point
-  interval={1} // Number of frames to wait before next calculation
-  target={null} // Optional target. This object will produce the trail.
-  attenuation={(width) => width} // A function to define the width in each point along it.
->
+       <Stars  radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+        <Sparkles  position={[0, 0, 0]} /> 
+        <Cloud position={[Math.random() * 10, 5,  Math.random() * -30, Math.random() * -10]} />
+        <Trail  
+         width={0.2} 
+         color={'hotpink'} 
+          decay={0.5} 
+          local={false} 
+          stride={1} 
+           interval={1} 
+          target={null} 
+          attenuation={(width) => width}>
         
         <Sphere ref={sphereRef} args={[1, 32, 32]} color="red">
-          <meshStandardMaterial />
+        <meshStandardMaterial />
         </Sphere>
         
         </Trail>
@@ -222,48 +255,31 @@ const Three = ({ }) => {
            <>
            <mesh >
 
-           <Text key={index}
+           <Text key={index} 
 
             position={[0, 0, zPositions[index]]}
-            color="black"
-            outlineColor="white" // set the outline color
+            
+            outlineColor='white' // default is 'black'
+
             outlineWidth={0.1} // set the outline width
             fontSize={0.2}
-            //make the text face the camera
-            anchorX="center" // set the anchor point on x axis
+            color='black'
+           
+            anchorX="center" 
             anchorY="middle"
             font="/Orbitron_Bold.json"
 
+
             lineHeight={1}
-            textAlign="center" // set the text alignment
-
-
-
-
-
-
-
-            // set the depth offset (should be a small value)
-            // set the font size
-            // set the anchor point on y axis
-            letterSpacing={0.5} // set the letter spacing
-            material={null} // set the material
+            textAlign="center" 
+            letterSpacing={0.5} 
+            material={null} 
           >
             {message.message} -  {message.username}
+          
           </Text> 
           </mesh>
-
-        
-         
-          
-          </>  
-         
-        
-         
-        
-         
-        
-         
+           </>  
         ))}
       </Canvas>
     </div>
