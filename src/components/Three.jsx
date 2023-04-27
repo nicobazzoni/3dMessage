@@ -9,6 +9,7 @@ import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
 import TrailBlaze from './Trail';
 import * as THREE from 'three';
 import BeamOfLight from './Lights';
+import Lights from './Lights';
 
 
 
@@ -114,6 +115,8 @@ const Three = ({ }) => {
 
   }
 
+ 
+   
   const animate = (time) => {
     if (isAnimating) {
       animateSphere(time);
@@ -125,7 +128,7 @@ const Three = ({ }) => {
     e.preventDefault();
 
     if (!username || !message) {
-      return;
+      return 
     }
 
     try {
@@ -163,6 +166,18 @@ const Clouds = () => {
 
 
 
+const [modalOpen, setModalOpen] = useState(false);
+ 
+
+const handleButtonClick = () => {
+  setModalOpen(!modalOpen);
+};
+
+const handleModalClose = () => {
+  setModalOpen(false);
+};
+
+
 
 
 
@@ -172,8 +187,16 @@ const Clouds = () => {
 
   return (
     <div className='border-none'>
+      <button onClick={handleButtonClick} className="bg-stone-100 h-10 right-28  rounded-lg p-2 mb-3 mt-4">
+          {modalOpen ? 'Close Modal' : 'Create Message'}
+        </button>
+        <div>
+        {modalOpen && (
+        <div className="modal-overlay " onClick={handleButtonClick}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
       
-     <form onSubmit={handleSubmit} className="mb-4 flex justify-center  ">
+     <form onSubmit={handleSubmit}  className="mb-4 flex justify-center  ">
+      
   <div className="bg-stone-200rounded-lg shadow-lg p-4 max-w-sm">
     <label className="block mt-2 mb-2 p-2 text-sm font-medium text-gray-900 items-center justify-center">
       Username:
@@ -204,6 +227,13 @@ const Clouds = () => {
     </button>
   </div>
 </form>
+</div>
+</div>
+        
+      )}
+
+      </div>
+
      
       
       <Canvas  style={{ height: '100vh', width: '100vw' }} background='blue'>
@@ -232,7 +262,7 @@ const Clouds = () => {
          
 
        <Stars color={['#ff0000', '#00ff00', '#0000ff']} radius={100} depth={50} count={5000} factor={8} saturation={0} fade speed={1} />
-       <Sparkles radius={100} depth={50} count={5000} factor={8} saturation={0} fade speed={1} />
+       <Sparkles radius={10000} depth={10000} count={5000} factor={50} saturation={0} fade speed={1} />
      
         <Cloud color='black' position={new THREE.Vector3(0, 0, -100)}  />
         <Trail  
@@ -252,7 +282,7 @@ const Clouds = () => {
         </Trail>
         <Clouds />
         <TrailBlaze  />
-       
+       <Lights radius={10000} depth={10000} count={5000} factor={50} saturation={0} fadeSpeed={1} />
        
         <pointLight position={[10, 10, 10]} color='red' />
           

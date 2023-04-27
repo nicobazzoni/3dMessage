@@ -11,6 +11,12 @@ function App() {
     setModalOpen(!modalOpen);
   };
 
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
+
+  
+
  
 
   return (
