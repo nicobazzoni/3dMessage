@@ -1,14 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Cloud, OrbitControls, Plane, Sky, Sparkles, Stars, Text, Text3D, Sphere, Billboard, ScreenSpace, Trail, CameraControls, PerspectiveCamera, FlyControls } from '@react-three/drei';
+
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
-import { SphereGeometry } from 'three';
-import { signIn } from '../firebase'
-import { OrthographicCamera,Bounds, useBounds } from '@react-three/drei';
-import { Line } from '@react-three/drei';
+
+
+import TrailBlaze from './Trail';
 import * as THREE from 'three';
-import { Torus, } from '@react-three/drei';
+import BeamOfLight from './Lights';
+
+
+
+
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBj569fcombAmC3dDyzXdOm-hMxPpkhrz4",
@@ -33,8 +38,7 @@ const Three = ({ }) => {
   const spacing = 1; // spacing between messages along the z-axis
   const staggerAmount = 1; // additional offset to stagger messages along the z-axis
   const [shouldAnimate, setShouldAnimate] = useState(true);
-  const cameraRef = useRef();
-  const sceneRef = useRef();
+
 
 
   // Update camera position on each frame
@@ -117,88 +121,7 @@ const Three = ({ }) => {
     frameId = requestAnimationFrame(animate);
   };
     
-
-
-
-
-
-  const [colors, setColors] = useState([]);
-
-  useEffect(() => {
-    const generateColors = () => {
-      const colors = [];
-      for (let i = 0; i < 5; i++) {
-        const hue = Math.floor(Math.random() * 360); // Random hue value between 0 and 359
-        const saturation = Math.floor(Math.random() * 101); // Random saturation value between 0 and 100
-        const lightness = Math.floor(Math.random() * 51) + 25; // Random lightness value between 25 and 75
-        const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-        colors.push(color);
-      }
-      return colors;
-    };
-
-  }, []);
-
-
-
- 
-
-  const handleGenerateColors = () => {
-    const newColors = generateColors();
-    setColors(newColors);
-  };
-
-
-    //create shiny spheres that move toward camera
-    const [shinySpheres, setShinySpheres] = useState([]);
-    const [shinySphereColors, setShinySphereColors] = useState([]);
-    const [shinySpherePositions, setShinySpherePositions] = useState([]);
-    const [shinySphereVelocities, setShinySphereVelocities] = useState([]);
-    const [shinySphereRadius, setShinySphereRadius] = useState(0.5);
-    const [shinySphereSegments, setShinySphereSegments] = useState(16);
-
-    const generateShinySpheres = () => {
-      const spheres = [];
-      const colors = [];
-      const positions = [];
-      const velocities = [];
-      for (let i = 0; i < 10; i++) {
-        const sphere = new THREE.SphereGeometry(shinySphereRadius, shinySphereSegments, shinySphereSegments);
-        const color = new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`);
-        const position = new THREE.Vector3(
-          Math.random() * 10 - 5,
-          Math.random() * 10 - 5,
-          Math.random() * 10 - 5
-        );
-        const velocity = new THREE.Vector3(
-          Math.random() * 0.01 - 0.005,
-          Math.random() * 0.01 - 0.005,
-          Math.random() * 0.01 - 0.005
-        );
-        spheres.push(sphere);
-        colors.push(color);
-        positions.push(position);
-        velocities.push(velocity);
-      }
-      setShinySpheres(spheres);
-      setShinySphereColors(colors);
-      setShinySpherePositions(positions);
-      setShinySphereVelocities(velocities);
-    };
-
-
-  
-
-    useEffect(() => {
-      generateShinySpheres();
-    }, []);
-
-   
-  
-   
-
-
-    const handleSubmit = async (e) => {
+   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!username || !message) {
@@ -219,9 +142,37 @@ const Three = ({ }) => {
     setMessages(messages);
 };
 
+const cloudCount = 30; // Number of clouds to create
+const cloudSpacing = 50; // Spacing between clouds along the z-axis
+
+const Clouds = () => {
+  return (
+    <>
+      {Array.from({ length: cloudCount }).map((_, index) => (
+        <Cloud
+          key={index}
+          color='black'
+          position={new THREE.Vector3(0, 0, -index * cloudSpacing)} // Set z-position based on index
+          /* other props */
+        />
+      ))}
+    </>
+  );
+};
+
+
+
+
+
+
+
+
+
+
 
   return (
     <div className='border-none'>
+      
      <form onSubmit={handleSubmit} className="mb-4 flex justify-center  ">
   <div className="bg-stone-200rounded-lg shadow-lg p-4 max-w-sm">
     <label className="block mt-2 mb-2 p-2 text-sm font-medium text-gray-900 items-center justify-center">
@@ -273,22 +224,17 @@ const Three = ({ }) => {
           
           />
           
+          
+  
 
 
 
          
 
-       <Stars  radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-       <Sparkles
-        position={[Math.random( ) * 10, 5,  Math.random( ) * -30, Math.random( ) * -10]}
-
-        color="black" // Color of the sparkles
-        count={20000} // Number of sparkles in the particle system
-        size={1} // Size of the sparkles
-        opacity={1} // Opacity of the sparkles
-        fade // Fade the sparkles in/out
-      />
-        <Cloud color='black' position={[Math.random() * 10, 5,  Math.random() * -30, Math.random() * -10]} />
+       <Stars color={['#ff0000', '#00ff00', '#0000ff']} radius={100} depth={50} count={5000} factor={8} saturation={0} fade speed={1} />
+       <Sparkles radius={100} depth={50} count={5000} factor={8} saturation={0} fade speed={1} />
+     
+        <Cloud color='black' position={new THREE.Vector3(0, 0, -100)}  />
         <Trail  
          width={0.2} 
          color={'hotpink'} 
@@ -301,9 +247,12 @@ const Three = ({ }) => {
         
         <Sphere ref={sphereRef} args={[1, 32, 32]} color="red">
         <meshStandardMaterial />
-        </Sphere>
-        
+        </Sphere> 
+        <spotLight position={[0, 20, 50]} angle={0.3} penumbra={1} intensity={2} color="white" />
         </Trail>
+        <Clouds />
+        <TrailBlaze  />
+       
        
         <pointLight position={[10, 10, 10]} color='red' />
           
@@ -334,7 +283,30 @@ const Three = ({ }) => {
             letterSpacing={0.5} 
             material={null} 
           >
-            {message.message}  <></> {message.username}
+            {message.message}  
+          
+          </Text>  
+          <Text key={index} 
+
+            position={[0, -0.5, zPositions[index]]}
+            
+            outlineColor='white' // default is 'black'
+
+            outlineWidth={0.1} // set the outline width
+            fontSize={0.1}
+            color='black'
+           
+            anchorX="center" 
+            anchorY="middle"
+            font="/Orbitron_Bold.json"
+
+
+            lineHeight={1}
+            textAlign="center" 
+            letterSpacing={0.5} 
+            material={null} 
+          >
+               {message.username}
           
           </Text> 
           </mesh>
