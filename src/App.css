@@ -42,3 +42,8 @@
 .read-the-docs {
   color: #888;
 }
+
+.canvas {
+
+  outline: none; border : none;
+}

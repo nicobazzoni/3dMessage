@@ -15,6 +15,7 @@ function App() {
     setModalOpen(false);
   };
 
+
   
 
  
@@ -43,7 +44,7 @@ function App() {
           </div>
         </div>
       )}
-      <div id="info" className="mb-4 flex justify-center items-center">
+      <div id="info" className="mb-4 flex justify-center items-center border-transparent focus:border-transparent focus:ring-0">
         <ThreeText />
       </div>
     </>

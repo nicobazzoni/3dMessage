@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@react-three/drei": "^9.65.5",
+    "@react-three/drei": "^9.66.1",
     "@react-three/fiber": "^8.12.2",
     "@types/three": "^0.150.2",
     "firebase": "^9.20.0",

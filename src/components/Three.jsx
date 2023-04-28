@@ -1,16 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Cloud, OrbitControls, Plane, Sky, Sparkles, Stars, Text, Text3D, Sphere, Billboard, ScreenSpace, Trail, CameraControls, PerspectiveCamera, FlyControls } from '@react-three/drei';
+import { Cloud, OrbitControls, Plane, Sky, Sparkles, Stars, Text, Text3D, Sphere, Billboard, ScreenSpace, Trail, CameraControls, PerspectiveCamera, FlyControls,  } from '@react-three/drei';
+
 
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
 
-
+import Button from './Button';
 import TrailBlaze from './Trail';
 import * as THREE from 'three';
-import BeamOfLight from './Lights';
-import Lights from './Lights';
 
+
+import ModifiedFlyControls from './ModifiedFlyControls';
 
 
 
@@ -166,6 +167,7 @@ const Clouds = () => {
 
 
 
+
 const [modalOpen, setModalOpen] = useState(false);
  
 
@@ -179,13 +181,23 @@ const handleModalClose = () => {
 
 
 
-
-
-
-
-
-
+//create reset button
+const ResetButton = () => {
+  const { camera } = useThree();
   return (
+    <Button
+      onClick={() => {
+        camera.position.set(0, 0, 0);
+        camera.lookAt(0, 0, -1);
+      }}
+      position={[0, 0, -2]}
+    />
+  );
+};
+  
+
+
+return (
     <div className='border-none'>
       <button onClick={handleButtonClick} className="bg-stone-100 h-10 right-28  rounded-lg p-2 mb-3 mt-4">
           {modalOpen ? 'Close Modal' : 'Create Message'}
@@ -228,63 +240,42 @@ const handleModalClose = () => {
   </div>
 </form>
 </div>
+
 </div>
         
       )}
+
+     
 
       </div>
 
      
       
       <Canvas  style={{ height: '100vh', width: '100vw' }} background='blue'>
- 
-      <FlyControls
-          background='white'
-          autoForward={true}
-          dragToLook={false}
-          movementSpeed={3}
-          rollSpeed={null}
-          makeDefault
-          position={[0, 2, 0]}
-          speed={0.2}
-          lookAt={[0, 0, 0]} // Set the initial target point of the camera
-          up={[0, 2, 0]} // S
-          
-         
-          
-          />
-          
-          
-  
-
-
-
-         
-
-       <Stars color={['#ff0000', '#00ff00', '#0000ff']} radius={100} depth={50} count={5000} factor={8} saturation={0} fade speed={1} />
+      
+      <Stars color={['#ff0000', '#00ff00', '#0000ff']} radius={100} depth={50} count={5000} factor={8} saturation={0} fade speed={1} />
        <Sparkles radius={10000} depth={10000} count={5000} factor={50} saturation={0} fade speed={1} />
      
         <Cloud color='black' position={new THREE.Vector3(0, 0, -100)}  />
-        <Trail  
-         width={0.2} 
-         color={'hotpink'} 
-          decay={0.5} 
-          local={false} 
-          stride={1} 
-           interval={1} 
-          target={null} 
-          attenuation={(width) => width}>
-        
+       
+        <Trail >
         <Sphere ref={sphereRef} args={[1, 32, 32]} color="red">
         <meshStandardMaterial />
         </Sphere> 
-        <spotLight position={[0, 20, 50]} angle={0.3} penumbra={1} intensity={2} color="white" />
+        <spotLight position={[0, 0, 0]} angle={0.3} penumbra={1} intensity={2} color="white" />
         </Trail>
         <Clouds />
         <TrailBlaze  />
-       <Lights radius={10000} depth={10000} count={5000} factor={50} saturation={0} fadeSpeed={1} />
+      
+        <FlyControls movementSpeed={10} rollSpeed={0.5} dragToLook={true} />
        
+        <ModifiedFlyControls movementSpeed={5} rollSpeed={0.5} dragToLook={true} />
+      
         <pointLight position={[10, 10, 10]} color='red' />
+
+        
+       
+    
           
         {messages.map((message, index) => (
          
@@ -339,10 +330,15 @@ const handleModalClose = () => {
                {message.username}
           
           </Text> 
+          
           </mesh>
+          
            </>  
         ))}
+
+
       </Canvas>
+     
     </div>
   );
 };
