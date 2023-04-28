@@ -267,9 +267,9 @@ return (
         <Clouds />
         <TrailBlaze  />
       
-        <FlyControls movementSpeed={10} rollSpeed={0.5} dragToLook={true} />
+        <FlyControls movementSpeed={10}  dragToLook={false} />
        
-        <ModifiedFlyControls movementSpeed={5} rollSpeed={0.5} dragToLook={true} />
+        <ModifiedFlyControls movementSpeed={5}  dragToLook={false} />
       
         <pointLight position={[10, 10, 10]} color='red' />
 
