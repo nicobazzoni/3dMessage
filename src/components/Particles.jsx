@@ -14,7 +14,7 @@ function Particle({ position, speed }) {
       ref.current.position.set(
         position.x,
         position.y,
-        position.z + 50 + Math.random() * 500
+        position.z + 100 + Math.random() * 500
       );
     }
   });

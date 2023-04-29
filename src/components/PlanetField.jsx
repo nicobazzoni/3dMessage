@@ -22,8 +22,13 @@ function Planet({ position, radius }) {
     }
   });
 
+  const handleClick = () => {
+    camera.position.set(0, 0, 0);
+    onClick();
+  };
+
   return (
-    <mesh ref={ref} position={position}>
+    <mesh ref={ref}  position={position}>
       <sphereBufferGeometry args={[radius, 64, 64]} />
       <meshStandardMaterial color="white" />
     </mesh>

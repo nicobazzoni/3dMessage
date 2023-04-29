@@ -1,20 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Cloud, OrbitControls, Plane, Sky, Sparkles, Stars, Text, Text3D, Sphere, Billboard, ScreenSpace, Trail, CameraControls, PerspectiveCamera, FlyControls, Loader, Torus,  } from '@react-three/drei';
+import { Cloud, OrbitControls, Plane, Sky, Sparkles, Stars, Text, Text3D, Sphere, Billboard, ScreenSpace, Trail, CameraControls, PerspectiveCamera, FlyControls, Loader, Torus, EnvironmentPortal, Box, BBAnchor, Html,  } from '@react-three/drei';
 
 
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
 
-import Button from './Button';
+import ResetButton from './ResetButton';
 import TrailBlaze from './Trail';
 import * as THREE from 'three';
-import Particles from './Particles';
-import ButtonPanel from './Panel';
+
 
 import ModifiedFlyControls from './ModifiedFlyControls';
 
 import dotenv from 'dotenv';
+//get env variables
+
+import { config } from 'dotenv';
+
 import ParticleField from './Particles';
 import TorusField from './Torus';
 import PlanetField from './PlanetField';
@@ -22,9 +25,10 @@ import TorusRingField from './Ring';
 
 
 
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBj569fcombAmC3dDyzXdOm-hMxPpkhrz4",
+  apiKey: import.meta.env.VITE_APP_FIREBASE_API_KEY,
   authDomain: "text-r3f.firebaseapp.com",
   projectId: "text-r3f",
   storageBucket: "text-r3f.appspot.com",
@@ -47,19 +51,34 @@ const Three = ({ }) => {
   const staggerAmount = 1; // additional offset to stagger messages along the z-axis
   const [shouldAnimate, setShouldAnimate] = useState(true);
 
+//create maetrial from star.png image
+  const starTexture = new THREE.TextureLoader().load('star.png');
+  const starMaterial = new THREE.PointsMaterial({
+    size: 0.1,
+    map: starTexture,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  
 
-
-  // Update camera position on each frame
-  //on scroll move camerea through z index
+ 
   
   const [isAnimating, setIsAnimating] = useState(true);
+  
+  
+  
+  
   const animateSphere = (time) => {
     // Animation logic for moving the sphere
     if (sphereRef.current) {
       const x = Math.cos(time) * 5;
       const y = Math.sin(time) * 10;
-      sphereRef.current.position.set(x, y, 0);
+      sphereRef.current.position.set (x, y, -20);
+
     }
+    
+    
   };
   
   
@@ -131,7 +150,11 @@ const Three = ({ }) => {
     frameId = requestAnimationFrame(animate);
   };
     
-   const handleSubmit = async (e) => {
+   
+  
+  //message submit function
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!username || !message) {
@@ -187,28 +210,13 @@ const handleModalClose = () => {
 
 
 
-//create reset button
-const ResetButton = () => {
-  const { camera } = useThree();
-  return (
-    <Button
-      onClick={() => {
-        camera.position.set(0, 0, 0);
-        camera.lookAt(0, 0, -1);
-      }}
-      position={[0, 0, -2]}
-    />
-  );
-};
 
-const controlsRef = useRef();
 
-const handleKeyDown = (event) => {
-  if (event.keyCode === 32) { // spacebar key
-    controlsRef.current.dispose();
-    document.removeEventListener('keydown', handleKeyDown);
-  }
-};
+
+
+//create reset button which is always seeen on screen
+
+
   
 
 
@@ -272,7 +280,7 @@ return (
        <Sparkles radius={10000} depth={10000} count={5000} factor={50} saturation={0} fade speed={1} />
      
         <Cloud color='black' position={new THREE.Vector3(0, 0, -100)}  />
-       
+  
         <Trail >
         <Sphere ref={sphereRef} args={[1, 32, 32]} color="red">
         <meshStandardMaterial />
@@ -281,24 +289,24 @@ return (
         </Trail>
         <Clouds />
         <TrailBlaze  />
-        <ParticleField    /> 
+        <ParticleField /> 
         <PlanetField />
-        <FlyControls movementSpeed={10}   rollSpeed={0} // Disable camera roll
+        <FlyControls movementSpeed={10}  position={[0, 0, -2]}   rollSpeed={0} // Disable camera roll
         dragToLook={false} // Disable camera spin
         keyboardControls={true}  />
         <TorusField />
         <TorusRingField />
         <ModifiedFlyControls movementSpeed={5} rollSpeed={0} dragToLook={false} />
-      
+        <ResetButton />
         <pointLight position={[10, 10, 10]} color='red' />
 
-        
+       
        
     
           
         {messages.map((message, index) => (
          
-        
+       
            
            <>
            <mesh >
@@ -308,6 +316,8 @@ return (
             position={[0, 0, zPositions[index]]}
             
             outlineColor='white' // default is 'black'
+            outlineBlur={0.01} // default is 0
+
 
             outlineWidth={0.1} // set the outline width
             fontSize={0.2}
@@ -317,7 +327,7 @@ return (
             anchorY="middle"
             font="/Orbitron_Bold.json"
 
-
+            
             lineHeight={1}
             textAlign="center" 
             letterSpacing={0.5} 

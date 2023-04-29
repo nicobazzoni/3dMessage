@@ -21,7 +21,7 @@ function TorusRing({ position, speed, size }) {
 
   return (
     <mesh ref={ref}>
-      <torusBufferGeometry args={[size, 0.9, 40, 9]} />
+      <torusBufferGeometry args={[size, 0.9, 200, 9]} />
         <meshBasicMaterial color="white" />
 
      

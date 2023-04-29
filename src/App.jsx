@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import reactLogo from './assets/react.svg';
 import './App.css';
 import ThreeText from './components/Three';
+import ResetButton from './components/ResetButton';
+import { useThree } from '@react-three/fiber';
+
+
+
 
 
 function App() {
   const [modalOpen, setModalOpen] = useState(false);
- 
+  const cameraRef = useRef();
 
   const handleButtonClick = () => {
     setModalOpen(!modalOpen);
@@ -16,10 +21,10 @@ function App() {
     setModalOpen(false);
   };
 
-
-  
-
- 
+  const handleResetCamera = () => {
+    cameraRef.current.position.set(0, 0, 0);
+    cameraRef.current.lookAt(0, 0, 0);
+  };
 
   return (
     <>
@@ -29,6 +34,7 @@ function App() {
         <button onClick={handleButtonClick} className="bg-stone-100 h-10 right-28  rounded-lg p-2 mb-3 mt-4">
           {modalOpen ? 'Close Modal' : 'Open controls Modal'}
         </button>
+       
       </header>
       {modalOpen && (
         <div className="modal-overlay " onClick={handleButtonClick}>
@@ -46,8 +52,11 @@ function App() {
         </div>
       )}
       <div id="info" className="mb-4 flex justify-center items-center border-transparent focus:border-transparent focus:ring-0">
-        <ThreeText />
+       
+        <ThreeText cameraRef={cameraRef} />
+       
       </div>
+
     </>
   );
 }

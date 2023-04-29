@@ -47,7 +47,7 @@ const ModifiedFlyControls = (props) => {
         movementSpeed={speed}
         
         keyboardControls={true}
-        position={[0, 0, 0]}
+        position={[0, 0, 20]}
        
        
         //makeDefault camera position
