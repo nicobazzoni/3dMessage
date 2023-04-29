@@ -26,6 +26,8 @@ const ModifiedFlyControls = (props) => {
     }
   }, []);
 
+  
+
   return (
     <>
       <mesh
@@ -43,7 +45,14 @@ const ModifiedFlyControls = (props) => {
       <FlyControls
         ref={flyControlsRef}
         movementSpeed={speed}
-        dragToLook={false}
+        
+        keyboardControls={true}
+        position={[0, 0, 0]}
+       
+       
+        //makeDefault camera position
+
+
         {...props}
       />
     </>

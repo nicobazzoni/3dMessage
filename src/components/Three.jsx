@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Cloud, OrbitControls, Plane, Sky, Sparkles, Stars, Text, Text3D, Sphere, Billboard, ScreenSpace, Trail, CameraControls, PerspectiveCamera, FlyControls,  } from '@react-three/drei';
+import { Cloud, OrbitControls, Plane, Sky, Sparkles, Stars, Text, Text3D, Sphere, Billboard, ScreenSpace, Trail, CameraControls, PerspectiveCamera, FlyControls, Loader,  } from '@react-three/drei';
 
 
 import { initializeApp } from 'firebase/app';
@@ -9,10 +9,13 @@ import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
 import Button from './Button';
 import TrailBlaze from './Trail';
 import * as THREE from 'three';
-
+import Particles from './Particles';
+import ButtonPanel from './Panel';
 
 import ModifiedFlyControls from './ModifiedFlyControls';
 
+import dotenv from 'dotenv';
+import ParticleField from './Particles';
 
 
 
@@ -194,6 +197,15 @@ const ResetButton = () => {
     />
   );
 };
+
+const controlsRef = useRef();
+
+const handleKeyDown = (event) => {
+  if (event.keyCode === 32) { // spacebar key
+    controlsRef.current.dispose();
+    document.removeEventListener('keydown', handleKeyDown);
+  }
+};
   
 
 
@@ -266,10 +278,13 @@ return (
         </Trail>
         <Clouds />
         <TrailBlaze  />
-      
-        <FlyControls movementSpeed={10}  dragToLook={false} />
-       
-        <ModifiedFlyControls movementSpeed={5}  dragToLook={false} />
+        <ParticleField    /> 
+     
+        <FlyControls movementSpeed={10}   rollSpeed={0} // Disable camera roll
+        dragToLook={false} // Disable camera spin
+        keyboardControls={true}  />
+
+        <ModifiedFlyControls movementSpeed={5} rollSpeed={0} dragToLook={false} />
       
         <pointLight position={[10, 10, 10]} color='red' />
 
