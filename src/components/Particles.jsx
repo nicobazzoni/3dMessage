@@ -21,8 +21,8 @@ function Particle({ position, speed }) {
 
   return (
     <points ref={ref}>
-      <sphereBufferGeometry args={[0.03, 2, 1]} />
-      <pointsMaterial color="white" />
+      <sphereBufferGeometry args={[0.003, 0.2, 0.1]} />
+      <pointsMaterial color="black" size={0.2}  />
     </points>
   );
 }
