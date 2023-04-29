@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Cloud, OrbitControls, Plane, Sky, Sparkles, Stars, Text, Text3D, Sphere, Billboard, ScreenSpace, Trail, CameraControls, PerspectiveCamera, FlyControls, Loader,  } from '@react-three/drei';
+import { Cloud, OrbitControls, Plane, Sky, Sparkles, Stars, Text, Text3D, Sphere, Billboard, ScreenSpace, Trail, CameraControls, PerspectiveCamera, FlyControls, Loader, Torus,  } from '@react-three/drei';
 
 
 import { initializeApp } from 'firebase/app';
@@ -16,6 +16,8 @@ import ModifiedFlyControls from './ModifiedFlyControls';
 
 import dotenv from 'dotenv';
 import ParticleField from './Particles';
+import TorusField from './Torus';
+import PlanetField from './PlanetField';
 
 
 
@@ -279,11 +281,11 @@ return (
         <Clouds />
         <TrailBlaze  />
         <ParticleField    /> 
-     
+        <PlanetField />
         <FlyControls movementSpeed={10}   rollSpeed={0} // Disable camera roll
         dragToLook={false} // Disable camera spin
         keyboardControls={true}  />
-
+        <TorusField />
         <ModifiedFlyControls movementSpeed={5} rollSpeed={0} dragToLook={false} />
       
         <pointLight position={[10, 10, 10]} color='red' />
