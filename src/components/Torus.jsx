@@ -14,7 +14,7 @@ function Torus({ position, speed }) {
       ref.current.position.set(
         position.x,
         position.y,
-        position.z + 50 + Math.random() * 300
+        position.z + 50 + Math.random() * 1000
       );
     }
   });
@@ -22,7 +22,7 @@ function Torus({ position, speed }) {
   return (
     <points ref={ref}>
       <sphereBufferGeometry args={[0.3, 0.2, 0.1]} />
-      <pointsMaterial color="pink" size={0.05} />
+      <pointsMaterial color="lightbluew" size={0.05} />
     </points>
   );
 }
@@ -34,7 +34,7 @@ function TorusField() {
     const position = new THREE.Vector3(
       (Math.random() - 0.5) * 10,
       (Math.random() - 0.5) * 10,
-      -100 - Math.random() * 200
+      -100 - Math.random() * 400
     );
     const speed = new THREE.Vector3(
       0,

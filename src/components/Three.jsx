@@ -18,6 +18,7 @@ import dotenv from 'dotenv';
 import ParticleField from './Particles';
 import TorusField from './Torus';
 import PlanetField from './PlanetField';
+import TorusRingField from './Ring';
 
 
 
@@ -286,6 +287,7 @@ return (
         dragToLook={false} // Disable camera spin
         keyboardControls={true}  />
         <TorusField />
+        <TorusRingField />
         <ModifiedFlyControls movementSpeed={5} rollSpeed={0} dragToLook={false} />
       
         <pointLight position={[10, 10, 10]} color='red' />

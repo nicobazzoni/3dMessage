@@ -14,7 +14,7 @@ function Particle({ position, speed }) {
       ref.current.position.set(
         position.x,
         position.y,
-        position.z + 50 + Math.random() * 100
+        position.z + 50 + Math.random() * 500
       );
     }
   });
@@ -34,7 +34,7 @@ function ParticleField() {
     const position = new THREE.Vector3(
       (Math.random() - 0.5) * 10,
       (Math.random() - 0.5) * 10,
-      -100 - Math.random() * 500
+      -100 - Math.random() * 800
     );
     const speed = new THREE.Vector3(
       0,
